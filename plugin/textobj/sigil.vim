@@ -15,4 +15,3 @@ call textobj#user#plugin('sigil', {
 		\     'select': ['ig'],
 		\   }})
 
-" match $$like->{'hoge'} or %hoge
