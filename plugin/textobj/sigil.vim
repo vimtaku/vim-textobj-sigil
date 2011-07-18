@@ -5,7 +5,6 @@ endif
 
 let g:loaded_textobj_sigil = 1
 
-
 call textobj#user#plugin('sigil', {
 \   'i': {
 \     '*pattern*': '[$@%&*][_a-zA-Z0-9]\+',
@@ -19,7 +18,6 @@ call textobj#user#plugin('sigil', {
 \})
 
 function! s:select_a()  "{{{2
-
   let save_ww = &whichwrap
   set whichwrap=h,l
 
@@ -66,8 +64,8 @@ function! s:select_a()  "{{{2
       if (char =~ '[}\])]')
 
         if (len(braces) < 1)
-          echo 'not match braces!'
-          return 0
+          let e = last_char_pos
+          break
         endif
 
         let poped = remove(braces, -1)
