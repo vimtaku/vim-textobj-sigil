@@ -27,6 +27,12 @@ function! s:select_a()  "{{{2
 
     let sigil_found = 0
     let l = getline('.')
+    let char = l[col('.') - 1]
+    if (char =~ '[\$@%&*]')
+        let sigil_found = 1
+        let b = getpos('.')
+    endif
+
     while col('.') != 1
       let char = l[col('.') - 1]
       if (char =~ '[\$@%&*]')
