@@ -27,6 +27,8 @@ function! s:select_a()  "{{{2
 
     let sigil_found = 0
     let l = getline('.')
+
+    " first character check
     let char = l[col('.') - 1]
     if (char =~ '[\$@%&*]')
         let sigil_found = 1
@@ -34,12 +36,26 @@ function! s:select_a()  "{{{2
     endif
 
     while col('.') != 1
-      let char = l[col('.') - 1]
+      let col = col('.')
+
+      " check cursor character
+      let char = l[col - 1]
       if (char =~ '[\$@%&*]')
         let sigil_found = 1
         let b = getpos('.')
         break
       endif
+
+      if (col == 2)
+          " check first character of line.
+          let char = l[col - 2]
+          if (char =~ '[\$@%&*]')
+            let sigil_found = 1
+            let b = s:get_prev_pos()
+            break
+          endif
+      endif
+
       normal! h
     endwhile
 
