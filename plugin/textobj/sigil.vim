@@ -28,13 +28,13 @@ function! s:select_a()  "{{{2
     let sigil_found = 0
     let l = getline('.')
     while col('.') != 1
-      normal! h
       let char = l[col('.') - 1]
       if (char =~ '[\$@%&*]')
         let sigil_found = 1
         let b = getpos('.')
         break
       endif
+      normal! h
     endwhile
 
     if (!sigil_found)
@@ -47,12 +47,12 @@ function! s:select_a()  "{{{2
 
     let braces = []
     let end_found = 0
-    let last_brace_pos = b
-    let last_char_pos  = b
+    let last_brace_pos = [b[0], b[1], b[2]-1, b[3]]
+    let last_char_pos  = last_brace_pos
     while (col('.') != col('$') - 1)
       normal! l
-      let char = l[col('.')]
-      let last_char_pos = getpos('.')
+      let char = l[col('.') - 1]
+      let last_char_pos = s:get_prev_pos()
 
       "" if open brace
       if (char =~ '[{\[(]')
@@ -86,7 +86,7 @@ function! s:select_a()  "{{{2
           endif
         endif
 
-        let last_brace_pos = getpos('.')
+        let last_brace_pos = s:get_prev_pos()
         continue
       endif
 
@@ -95,13 +95,13 @@ function! s:select_a()  "{{{2
       if (len(braces) >= 1)
         " allow space
         if (char =~ '[,;]')
-          let e = getpos('.')
+          let e = s:get_prev_pos()
           let end_found = 1
           break
         endif
       else
         if (char =~ '[ ,;]')
-          let e = getpos('.')
+          let e = s:get_prev_pos()
           let end_found = 1
           break
         endif
@@ -123,5 +123,10 @@ function! s:select_a()  "{{{2
   endtry
 
   return ['v', b, e]
+endfunction
+
+function! s:get_prev_pos()
+  let pos = getpos('.')
+  return [pos[0], pos[1], pos[2] -1, pos[3]]
 endfunction
 

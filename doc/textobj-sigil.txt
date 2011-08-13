@@ -45,14 +45,14 @@ These key mappings are defined in Visual mode and Operator-pending mode.
 			                 ^ here is cursor
 			then
 			my $name = $sample_aref->{'member'}->{'name'};
-			           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+			           ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 			           this range is selected.
 			
 			my ($first) = @list[qw/hoge fuga/];
 			                    ^ here is cursor
 			then
 			my ($first) = @list[qw/hoge fuga/];
-			              ~~~~~~~~~~~~~~~~~~~~
+			              ~~~~~~~~~~~~~~~~~~~~~
 			              this range is selected.
 
 
@@ -66,7 +66,7 @@ These key mappings are defined in Visual mode and Operator-pending mode.
 			                  ^ here is cursor
 			then
 			my ($first) = @list[qw/hoge fuga/];
-			              ~~~~~
+			              ~~~~~~
 			              this range is selected.
 
 
@@ -89,6 +89,16 @@ unless [!] is given.
 
 ==============================================================================
 CHANGELOG					*textobj-sigil-changelog*
+
+0.1.1	2011-08-13
+	- a few bug fix.
+        fix textobj-sigil-a.
+        start position bug fixed. This fix provide you that start sigil
+        text is selected.
+        and some bug fix like below.
+
+        my @hoge = @{  $fugafuga->{'hoge'}  };
+                    ^ here is the cursor and we can select @{...} now.
 
 0.1.1	2011-07-18
 	- Bug fix. When we using textobj-sigil-a and found closed brace first,
