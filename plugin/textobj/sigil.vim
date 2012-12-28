@@ -91,6 +91,7 @@ function! s:select_a()  "{{{2
         endif
 
         let poped = remove(braces, -1)
+
         if (poped == '[')
           if (char != ']')
             echo 'illegal braces match!'
@@ -108,28 +109,32 @@ function! s:select_a()  "{{{2
           endif
         endif
 
+"         if (s:is_brace(poped) &&  ! s:is_match_brace(poped, char) )
+"           return s:show_error('illegal braces match!')
+"         endif
+
         let last_brace_pos = s:get_prev_pos()
         continue
       endif
 
 
+      "" allow space during braces
+      let find_endchar_regex = (len(braces) >= 1) ? '[,;]' : '[ ,;]'
+
       "" check end character or not
-      if (len(braces) >= 1)
-        " allow space
-        if (char =~ '[,;]')
+      if (char =~ find_endchar_regex)
           let e = s:get_prev_pos()
           let end_found = 1
           break
-        endif
-      else
-        if (char =~ '[ ,;]')
-          let e = s:get_prev_pos()
+      endif
+
+      "" this plugin only allow a line.
+      if (s:is_eol())
+          let e = getpos('.')
           let end_found = 1
           break
-        endif
       endif
     endwhile
-
 
     if (!end_found)
         " which col is bigger?
@@ -151,4 +156,32 @@ function! s:get_prev_pos()
   let pos = getpos('.')
   return [pos[0], pos[1], pos[2] -1, pos[3]]
 endfunction
+
+
+function! s:is_brace(char)
+    return (a:char =~ '[{\[()\]}]') ? 1 : 0
+endfunction
+
+function! s:is_match_brace(open, close)
+    if (a:open == '[' && a:close == ']')
+        return 1
+    endif
+    if (a:open == '{' && a:close == '}')
+        return 1
+    endif
+    if (a:open == '(' && a:close == ')')
+        return 1
+    endif
+    return 0
+endfunction
+
+function! s:show_error(msg)
+    echoerr a:msg
+    return 0
+endfunction
+
+function! s:is_eol()
+  return strlen(getline('.')) == col('.') ? 1 : 0
+endfunction
+
 
