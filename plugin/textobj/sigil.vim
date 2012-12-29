@@ -5,6 +5,12 @@ endif
 
 let g:loaded_textobj_sigil = 1
 
+let s:BRACE_MAP = {
+\'(' : ')'
+\, '{' : '}'
+\, '[' : ']'
+\}
+
 call textobj#user#plugin('sigil', {
 \   'i': {
 \     '*pattern*': '[$@%&*][_a-zA-Z0-9]\+',
@@ -60,8 +66,7 @@ function! s:select_a()  "{{{2
     endwhile
 
     if (!sigil_found)
-      echo 'sigil not found!'
-      return 0
+      return s:show_error('sigil not found!')
     endif
 
     call cursor(b[1], b[2])
@@ -92,28 +97,11 @@ function! s:select_a()  "{{{2
 
         let poped = remove(braces, -1)
 
-        if (poped == '[')
-          if (char != ']')
-            echo 'illegal braces match!'
-            return 0
-          endif
-        elseif (poped == '{')
-          if (char != '}')
-            echo 'illegal braces match!'
-            return 0
-          endif
-        elseif (poped == '(')
-          if (char != ')')
-            echo 'illegal braces match!'
-            return 0
-          endif
+        if (s:is_brace(poped) && !s:is_match_brace(poped, char))
+          return s:show_error('illegal braces match!')
         endif
 
-"         if (s:is_brace(poped) &&  ! s:is_match_brace(poped, char) )
-"           return s:show_error('illegal braces match!')
-"         endif
-
-        let last_brace_pos = s:get_prev_pos()
+        let last_brace_pos = getpos('.')
         continue
       endif
 
@@ -142,7 +130,7 @@ function! s:select_a()  "{{{2
           let e = last_brace_pos
         else
           let e = last_char_pos
-        endif
+        endif 
     endif
 
   finally
@@ -157,19 +145,12 @@ function! s:get_prev_pos()
   return [pos[0], pos[1], pos[2] -1, pos[3]]
 endfunction
 
-
 function! s:is_brace(char)
     return (a:char =~ '[{\[()\]}]') ? 1 : 0
 endfunction
 
 function! s:is_match_brace(open, close)
-    if (a:open == '[' && a:close == ']')
-        return 1
-    endif
-    if (a:open == '{' && a:close == '}')
-        return 1
-    endif
-    if (a:open == '(' && a:close == ')')
+    if has_key(s:BRACE_MAP, a:open) && (s:BRACE_MAP[ a:open ] == a:close)
         return 1
     endif
     return 0
@@ -182,6 +163,10 @@ endfunction
 
 function! s:is_eol()
   return strlen(getline('.')) == col('.') ? 1 : 0
+endfunction
+
+function! s:str2bytes(str)
+  return map(range(len(a:str)), 'char2nr(a:str[v:val])')
 endfunction
 
 
